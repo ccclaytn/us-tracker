@@ -11,7 +11,7 @@
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
       margin: 20px;
-      background: #dbebe5;            /* light teal background from palette */
+      background: #fdf2f8;          /* light pastel pink */
       color: #495057;
     }
     .dashboard-card {
@@ -22,14 +22,15 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.04);
     }
     .title-card {
-      background: #469b83;             /* green accent */
-      color: white;
+      background: #ffffff;
+      border: 1px solid #f8bbd0;    /* soft pink border */
       text-align: center;
     }
     .main-title {
       margin: 0;
       font-size: 24px;
       font-weight: 600;
+      color: #495057;
     }
     .settings {
       background: #ffffff;
@@ -38,13 +39,13 @@
       margin-bottom: 20px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
-    .settings summary { cursor: pointer; font-weight: bold; color: #00876c; }
+    .settings summary { cursor: pointer; font-weight: bold; color: #d81b60; } /* pink accent */
     input[type="text"] {
       width: 100%;
       margin: 8px 0;
       padding: 10px 14px;
       border-radius: 12px;
-      border: 1px solid #00876c;
+      border: 1px solid #f8bbd0;
       font-size: 14px;
       outline: none;
       background: #ffffff;
@@ -55,12 +56,12 @@
       font-size: 14px;
       cursor: pointer;
       border-radius: 12px;
-      border: 1px solid #00876c;
+      border: 1px solid #90caf9;     /* light blue */
       background: #ffffff;
-      color: #00876c;
+      color: #1565c0;
       transition: all 0.2s;
     }
-    button:hover { background: #00876c; color: white; border-color: #00876c; }
+    button:hover { background: #bbdefb; border-color: #64b5f6; }
     select { background: #ffffff; }
     .section { margin: 30px 0; }
     .note { font-size: 0.85em; color: #6c757d; margin-top: 8px; }
@@ -87,7 +88,7 @@
       table-layout: auto;
     }
     .horizontal-table th, .horizontal-table td {
-      border: 1px solid #93c3b3;
+      border: 1px solid #e0e0e0;
       padding: 8px 6px;
       text-align: center;
       font-size: 13px;
@@ -95,7 +96,7 @@
       background-color: transparent;
     }
     .horizontal-table th {
-      background: #b7d7cc;             /* light green header */
+      background: #f8bbd0;           /* soft pink header */
       font-weight: 600;
       white-space: nowrap;
       color: #495057;
@@ -104,29 +105,29 @@
       transition: background 0.3s;
     }
     .least {
-      outline: 3px solid #495057;
+      outline: 3px solid #333;
       outline-offset: -3px;
       font-weight: bold;
     }
-    /* Imbalance score backgrounds using palette */
-    .imbalance-green { background-color: #b7d7cc; color: #155724; }
-    .imbalance-yellow { background-color: #ffffff; color: #856404; }
-    .imbalance-red { background-color: #f9c2c1; color: #721c24; }
+    /* Imbalance score colours */
+    .imbalance-green { background-color: #c8e6c9; color: #2e7d32; }   /* soft green */
+    .imbalance-yellow { background-color: #fff9c4; color: #f57f17; }  /* soft yellow */
+    .imbalance-red { background-color: #ffcdd2; color: #c62828; }     /* soft red */
     .no-data { color: #888; font-style: italic; }
     .status { font-size: 0.9em; color: #6c757d; margin-left: 10px; }
 
     .btn-outline {
       background: white;
-      border: 1px solid #00876c;
-      color: #00876c;
+      border: 1px solid #90caf9;
+      color: #1565c0;
     }
-    .btn-outline:hover { background: #00876c; color: white; }
+    .btn-outline:hover { background: #bbdefb; }
     .btn-danger-soft {
       background: #ffffff;
-      border-color: #d43d51;
-      color: #d43d51;
+      border-color: #f8bbd0;
+      color: #c62828;
     }
-    .btn-danger-soft:hover { background: #d43d51; color: white; }
+    .btn-danger-soft:hover { background: #f8bbd0; }
   </style>
 </head>
 <body>
@@ -175,12 +176,12 @@
 
   <!-- Horizontal fairness table -->
   <div class="dashboard-card">
-    <h3 style="margin-top:0; color:#495057;">Fairness table – most duties to least (green → red gradient)</h3>
+    <h3 style="margin-top:0; color:#495057;">Fairness table – most duties to least (blue → pink gradient)</h3>
     <div class="fair-table-wrapper">
       <table class="horizontal-table" id="fairTable"></table>
     </div>
     <div class="note">
-      🟢➔🔴 Gradient: green = most assigned, red = least assigned.<br>
+      🔵➔🩷 Gradient: blue = most assigned, pink = least assigned.<br>
       <strong>Thick outline</strong> = radiographer with fewest duties (ideal for next roster).<br>
       Balance score: <span class="imbalance-green">0–30% very fair</span>,
       <span class="imbalance-yellow">30–50% moderate</span>,
@@ -211,12 +212,20 @@
 2026-04-20,Dave,USP.
 2026-04-27,Bob,KUS`;
 
-    // Your custom 13-colour palette – used for months in order
+    // 12 distinguishable pastel colours for months (no heavy greens)
     const MONTH_COLORS = [
-      '#00876c', '#469b83', '#6eaf9a', '#93c3b3',
-      '#b7d7cc', '#dbebe5', '#ffffff', '#fde0e0',
-      '#f9c2c1', '#f3a3a4', '#eb8387', '#e0636b',
-      '#d43d51'
+      '#FFB3BA',  // light pink
+      '#FFDFBA',  // peach
+      '#FFFFBA',  // light yellow
+      '#BAFFC9',  // soft mint (very light green – subtle but distinct)
+      '#BAE1FF',  // light blue
+      '#D0BAFF',  // lavender
+      '#FFC8DD',  // rose
+      '#BDE0FE',  // powder blue
+      '#A2D2FF',  // baby blue
+      '#FEEFA2',  // pale gold
+      '#FFC8A2',  // light orange
+      '#E0BBE4'   // thistle purple
     ];
 
     let allRecords = [];
@@ -412,8 +421,8 @@
           data: sortedRadiographers.map(rad =>
             records.filter(r => r.radiographer === rad).length
           ),
-          backgroundColor: '#00876c',
-          borderColor: '#00876c',
+          backgroundColor: '#BAE1FF',   // light blue for single month
+          borderColor: '#BAE1FF',
           borderWidth: 1,
           borderRadius: 6
         }];
@@ -456,7 +465,7 @@
       });
     }
 
-    // ---------- Horizontal table with palette gradient ----------
+    // ---------- Horizontal table with blue → pink gradient ----------
     function updateTable(records, selectedDuty, sortedRadiographers, countsForSort) {
       if (sortedRadiographers.length === 0) {
         document.getElementById('fairTable').innerHTML = '<tr><td class="no-data">No staff data.</td></tr>';
@@ -489,15 +498,14 @@
         return 'imbalance-red';
       }
 
-      // Gradient from #00876c (green) for max to #d43d51 (red) for min
-      function paletteGradient(val) {
-        if (range === 0) return '#00876c';
+      // Smooth gradient from pastel blue (most) to pastel pink (least)
+      function gradient(val) {
+        if (range === 0) return '#bbdefb';       // all same -> blue
         const ratio = (val - minVal) / range;
-        const r1 = 0x00, g1 = 0x87, b1 = 0x6c;   // #00876c
-        const r2 = 0xd4, g2 = 0x3d, b2 = 0x51;   // #d43d51
-        const r = Math.round(r1 + ratio * (r2 - r1));
-        const g = Math.round(g1 + ratio * (g2 - g1));
-        const b = Math.round(b1 + ratio * (b2 - b1));
+        // #bbdefb (187,222,251) to #f8bbd0 (248,187,208)
+        const r = Math.round(187 + ratio * (248 - 187));
+        const g = Math.round(222 + ratio * (187 - 222));
+        const b = Math.round(251 + ratio * (208 - 251));
         return `rgb(${r}, ${g}, ${b})`;
       }
 
@@ -508,7 +516,7 @@
       html += '<tr>';
       sortedRadiographers.forEach(rad => {
         const val = counts[rad];
-        const bg = paletteGradient(val);
+        const bg = gradient(val);
         const isLeast = (val === minVal) ? 'class="least"' : '';
         html += `<td style="background:${bg};" ${isLeast}>${val}</td>`;
       });
