@@ -11,33 +11,43 @@
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
       margin: 20px;
-      background: #F8F9FA;
+      background: #dbebe5;            /* light teal background from palette */
       color: #495057;
     }
     .dashboard-card {
-      background: white;
+      background: #ffffff;
       border-radius: 20px;
       padding: 24px;
       margin-bottom: 24px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.04);
     }
+    .title-card {
+      background: #469b83;             /* green accent */
+      color: white;
+      text-align: center;
+    }
+    .main-title {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 600;
+    }
     .settings {
-      background: white;
+      background: #ffffff;
       border-radius: 16px;
       padding: 12px 20px;
       margin-bottom: 20px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
-    .settings summary { cursor: pointer; font-weight: bold; color: #495057; }
+    .settings summary { cursor: pointer; font-weight: bold; color: #00876c; }
     input[type="text"] {
       width: 100%;
       margin: 8px 0;
       padding: 10px 14px;
       border-radius: 12px;
-      border: 1px solid #D1E8FF;
+      border: 1px solid #00876c;
       font-size: 14px;
       outline: none;
-      background: #F8F9FA;
+      background: #ffffff;
     }
     button, select {
       margin: 6px 4px;
@@ -45,31 +55,30 @@
       font-size: 14px;
       cursor: pointer;
       border-radius: 12px;
-      border: 1px solid #D1E8FF;
-      background: white;
-      color: #495057;
+      border: 1px solid #00876c;
+      background: #ffffff;
+      color: #00876c;
       transition: all 0.2s;
     }
-    button:hover { background: #D1E8FF; border-color: #D1E8FF; }
-    select { background: white; }
+    button:hover { background: #00876c; color: white; border-color: #00876c; }
+    select { background: #ffffff; }
     .section { margin: 30px 0; }
     .note { font-size: 0.85em; color: #6c757d; margin-top: 8px; }
     .chart-container {
       position: relative;
       width: 100%;
       max-width: 100%;
-      background: white;
+      background: #ffffff;
       border-radius: 16px;
       padding: 8px;
     }
     canvas { max-width: 100%; height: 400px; display: block; }
 
-    /* Horizontal table – narrower cells */
     .fair-table-wrapper {
       width: 100%;
       overflow-x: auto;
       border-radius: 16px;
-      background: white;
+      background: #ffffff;
       padding: 4px 0;
     }
     .horizontal-table {
@@ -78,7 +87,7 @@
       table-layout: auto;
     }
     .horizontal-table th, .horizontal-table td {
-      border: 1px solid #E9ECEF;
+      border: 1px solid #93c3b3;
       padding: 8px 6px;
       text-align: center;
       font-size: 13px;
@@ -86,9 +95,10 @@
       background-color: transparent;
     }
     .horizontal-table th {
-      background: #F1F3F5;
+      background: #b7d7cc;             /* light green header */
       font-weight: 600;
       white-space: nowrap;
+      color: #495057;
     }
     .horizontal-table td {
       transition: background 0.3s;
@@ -98,37 +108,30 @@
       outline-offset: -3px;
       font-weight: bold;
     }
-    .imbalance-green { background-color: #D4EDDA; color: #155724; }
-    .imbalance-yellow { background-color: #FFF3CD; color: #856404; }
-    .imbalance-red { background-color: #F8D7DA; color: #721c24; }
+    /* Imbalance score backgrounds using palette */
+    .imbalance-green { background-color: #b7d7cc; color: #155724; }
+    .imbalance-yellow { background-color: #ffffff; color: #856404; }
+    .imbalance-red { background-color: #f9c2c1; color: #721c24; }
     .no-data { color: #888; font-style: italic; }
     .status { font-size: 0.9em; color: #6c757d; margin-left: 10px; }
 
-    /* Title centered */
-    .main-title {
-      text-align: center;
-      margin: 0 0 8px 0;
-      font-size: 24px;
-      font-weight: 600;
-      color: #495057;
-    }
-
     .btn-outline {
       background: white;
-      border: 1px solid #D1E8FF;
+      border: 1px solid #00876c;
+      color: #00876c;
     }
-    .btn-outline:hover { background: #D1E8FF; }
+    .btn-outline:hover { background: #00876c; color: white; }
     .btn-danger-soft {
-      background: #F8D7DA;
-      border-color: #F8D7DA;
-      color: #721c24;
+      background: #ffffff;
+      border-color: #d43d51;
+      color: #d43d51;
     }
-    .btn-danger-soft:hover { background: #f1c0c5; }
+    .btn-danger-soft:hover { background: #d43d51; color: white; }
   </style>
 </head>
 <body>
   <!-- Title centered -->
-  <div class="dashboard-card" style="text-align:center;">
+  <div class="dashboard-card title-card">
     <h2 class="main-title">👀 Ultrasound Duty Fairness Dashboard</h2>
   </div>
 
@@ -186,10 +189,8 @@
   </div>
 
   <script>
-    // ===================== CONFIGURATION =====================
     const DEFAULT_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQSKK4Y2jaIBMsnviob3Ckh-DAgSqsrEATV8rr4LHezAcjTQ3nCB1G7zsOeHTBhR1ygb7sj8f7-eqr4/pub?gid=0&single=true&output=csv";
 
-    // Sample data
     const SAMPLE_CSV = `Date,Radiographer,Duty
 2026-01-05,Alice,USP.
 2026-01-05,Bob,KUS
@@ -210,11 +211,12 @@
 2026-04-20,Dave,USP.
 2026-04-27,Bob,KUS`;
 
-    // Professional, colorblind‑friendly qualitative palette (Tableau 10 + 2)
+    // Your custom 13-colour palette – used for months in order
     const MONTH_COLORS = [
-      '#4E79A7', '#F28E2B', '#E15759', '#76B7B2',
-      '#59A14F', '#EDC948', '#B07AA1', '#FF9DA7',
-      '#9C755F', '#BAB0AC', '#1F78B4', '#A6CEE3'
+      '#00876c', '#469b83', '#6eaf9a', '#93c3b3',
+      '#b7d7cc', '#dbebe5', '#ffffff', '#fde0e0',
+      '#f9c2c1', '#f3a3a4', '#eb8387', '#e0636b',
+      '#d43d51'
     ];
 
     let allRecords = [];
@@ -386,7 +388,6 @@
         return;
       }
 
-      // Ensure consistent font family across all chart elements
       Chart.defaults.font.family = "'Segoe UI', Arial, sans-serif";
 
       let datasets;
@@ -411,8 +412,8 @@
           data: sortedRadiographers.map(rad =>
             records.filter(r => r.radiographer === rad).length
           ),
-          backgroundColor: '#4E79A7',
-          borderColor: '#4E79A7',
+          backgroundColor: '#00876c',
+          borderColor: '#00876c',
           borderWidth: 1,
           borderRadius: 6
         }];
@@ -437,9 +438,7 @@
         options: {
           responsive: true,
           plugins: {
-            tooltip: {
-              callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} duties` }
-            },
+            tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} duties` } },
             legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 10 } },
             title: {
               display: true,
@@ -457,7 +456,7 @@
       });
     }
 
-    // ---------- Horizontal table with pastel gradient (kept) ----------
+    // ---------- Horizontal table with palette gradient ----------
     function updateTable(records, selectedDuty, sortedRadiographers, countsForSort) {
       if (sortedRadiographers.length === 0) {
         document.getElementById('fairTable').innerHTML = '<tr><td class="no-data">No staff data.</td></tr>';
@@ -490,13 +489,15 @@
         return 'imbalance-red';
       }
 
-      // Pastel gradient from Mint Green (most) to Soft Rose (least) – visually gentle
-      function gradient(val) {
-        if (range === 0) return '#D4EDDA';
+      // Gradient from #00876c (green) for max to #d43d51 (red) for min
+      function paletteGradient(val) {
+        if (range === 0) return '#00876c';
         const ratio = (val - minVal) / range;
-        const r = Math.round(0xF8 + ratio * (0xD4 - 0xF8));
-        const g = Math.round(0xD7 + ratio * (0xED - 0xD7));
-        const b = Math.round(0xDA + ratio * (0xDA - 0xDA)); // both same blue component
+        const r1 = 0x00, g1 = 0x87, b1 = 0x6c;   // #00876c
+        const r2 = 0xd4, g2 = 0x3d, b2 = 0x51;   // #d43d51
+        const r = Math.round(r1 + ratio * (r2 - r1));
+        const g = Math.round(g1 + ratio * (g2 - g1));
+        const b = Math.round(b1 + ratio * (b2 - b1));
         return `rgb(${r}, ${g}, ${b})`;
       }
 
@@ -507,7 +508,7 @@
       html += '<tr>';
       sortedRadiographers.forEach(rad => {
         const val = counts[rad];
-        const bg = gradient(val);
+        const bg = paletteGradient(val);
         const isLeast = (val === minVal) ? 'class="least"' : '';
         html += `<td style="background:${bg};" ${isLeast}>${val}</td>`;
       });
