@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Ultrasound Duty Fairness Dashboard</title>
+  <!-- Favicon: eyes emoji -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👀</text></svg>">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     * { box-sizing: border-box; }
@@ -62,7 +64,7 @@
     }
     canvas { max-width: 100%; height: 400px; display: block; }
 
-    /* Horizontal table styles – narrower cells */
+    /* Horizontal table – narrower cells */
     .fair-table-wrapper {
       width: 100%;
       overflow-x: auto;
@@ -80,7 +82,7 @@
       padding: 8px 6px;
       text-align: center;
       font-size: 13px;
-      min-width: 60px;          /* reduced from 70px */
+      min-width: 60px;
       background-color: transparent;
     }
     .horizontal-table th {
@@ -89,7 +91,6 @@
       white-space: nowrap;
     }
     .horizontal-table td {
-      border-radius: 0;         /* cells don't need individual rounding; container is rounded */
       transition: background 0.3s;
     }
     .least {
@@ -112,7 +113,6 @@
       color: #495057;
     }
 
-    /* Pastel buttons for specific actions */
     .btn-outline {
       background: white;
       border: 1px solid #D1E8FF;
@@ -172,12 +172,12 @@
 
   <!-- Horizontal fairness table -->
   <div class="dashboard-card">
-    <h3 style="margin-top:0; color:#495057;">Fairness table – most duties to least (green 🔴 ➔ 🟢 red gradient)</h3>
+    <h3 style="margin-top:0; color:#495057;">Fairness table – most duties to least (green → red gradient)</h3>
     <div class="fair-table-wrapper">
       <table class="horizontal-table" id="fairTable"></table>
     </div>
     <div class="note">
-      🔴➔🟢 Gradient: red = least assigned, green = most assigned.<br>
+      🟢➔🔴 Gradient: green = most assigned, red = least assigned.<br>
       <strong>Thick outline</strong> = radiographer with fewest duties (ideal for next roster).<br>
       Balance score: <span class="imbalance-green">0–30% very fair</span>,
       <span class="imbalance-yellow">30–50% moderate</span>,
@@ -186,6 +186,7 @@
   </div>
 
   <script>
+    // ===================== CONFIGURATION =====================
     const DEFAULT_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQSKK4Y2jaIBMsnviob3Ckh-DAgSqsrEATV8rr4LHezAcjTQ3nCB1G7zsOeHTBhR1ygb7sj8f7-eqr4/pub?gid=0&single=true&output=csv";
 
     // Sample data
@@ -209,20 +210,11 @@
 2026-04-20,Dave,USP.
 2026-04-27,Bob,KUS`;
 
-    // Pastel palette for months (12 distinct soft colors)
+    // Professional, colorblind‑friendly qualitative palette (Tableau 10 + 2)
     const MONTH_COLORS = [
-      '#D1E8FF', // Soft Sky Blue
-      '#D4EDDA', // Mint Green
-      '#FFF3CD', // Pale Straw
-      '#F8D7DA', // Soft Rose
-      '#E2E3E5', // Light Gray
-      '#FDE2E4', // Blush
-      '#FAD2E1', // Pink
-      '#C5D3E8', // Periwinkle
-      '#D6E5FA', // Powder Blue
-      '#E8F4F8', // Ice Blue
-      '#F0F4C3', // Light Lime
-      '#FFE5B4'  // Peach
+      '#4E79A7', '#F28E2B', '#E15759', '#76B7B2',
+      '#59A14F', '#EDC948', '#B07AA1', '#FF9DA7',
+      '#9C755F', '#BAB0AC', '#1F78B4', '#A6CEE3'
     ];
 
     let allRecords = [];
@@ -374,7 +366,7 @@
       updateTable(records, selectedDuty, sortedRadiographers, countsForSort);
     }
 
-    // ---------- Chart with rounded bars and pastel colors ----------
+    // ---------- Chart with rounded bars and unified font ----------
     function updateChart(records, selectedDuty, selectedMonth, sortedRadiographers) {
       const canvas = document.getElementById('dutyChart');
       const noDataDiv = document.getElementById('noDataMessage');
@@ -393,6 +385,9 @@
         if (chartInstance) chartInstance.destroy();
         return;
       }
+
+      // Ensure consistent font family across all chart elements
+      Chart.defaults.font.family = "'Segoe UI', Arial, sans-serif";
 
       let datasets;
       if (selectedMonth === 'All') {
@@ -416,8 +411,8 @@
           data: sortedRadiographers.map(rad =>
             records.filter(r => r.radiographer === rad).length
           ),
-          backgroundColor: '#D1E8FF',
-          borderColor: '#D1E8FF',
+          backgroundColor: '#4E79A7',
+          borderColor: '#4E79A7',
           borderWidth: 1,
           borderRadius: 6
         }];
@@ -442,13 +437,15 @@
         options: {
           responsive: true,
           plugins: {
-            tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} duties` } },
+            tooltip: {
+              callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} duties` }
+            },
             legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 10 } },
             title: {
               display: true,
               text: (selectedDuty === 'All' ? 'All duties' : selectedDuty) +
                     (selectedMonth === 'All' ? ' – all months' : ' – ' + selectedMonth),
-              font: { size: 16, family: "'Segoe UI'", weight: '600' },
+              font: { size: 16, family: "'Segoe UI', Arial, sans-serif", weight: '600' },
               color: '#495057'
             }
           },
@@ -460,7 +457,7 @@
       });
     }
 
-    // ---------- Horizontal table with pastel gradient ----------
+    // ---------- Horizontal table with pastel gradient (kept) ----------
     function updateTable(records, selectedDuty, sortedRadiographers, countsForSort) {
       if (sortedRadiographers.length === 0) {
         document.getElementById('fairTable').innerHTML = '<tr><td class="no-data">No staff data.</td></tr>';
@@ -493,36 +490,29 @@
         return 'imbalance-red';
       }
 
-      // Gradient from Mint Green (most) to Soft Rose (least)
-      function pastelGradient(val) {
+      // Pastel gradient from Mint Green (most) to Soft Rose (least) – visually gentle
+      function gradient(val) {
         if (range === 0) return '#D4EDDA';
         const ratio = (val - minVal) / range;
-        // Interpolate between #F8D7DA (soft rose) and #D4EDDA (mint green)
-        const r1 = 0xF8, g1 = 0xD7, b1 = 0xDA; // rose
-        const r2 = 0xD4, g2 = 0xED, b2 = 0xDA; // mint
-        const r = Math.round(r1 + ratio * (r2 - r1));
-        const g = Math.round(g1 + ratio * (g2 - g1));
-        const b = Math.round(b1 + ratio * (b2 - b1));
+        const r = Math.round(0xF8 + ratio * (0xD4 - 0xF8));
+        const g = Math.round(0xD7 + ratio * (0xED - 0xD7));
+        const b = Math.round(0xDA + ratio * (0xDA - 0xDA)); // both same blue component
         return `rgb(${r}, ${g}, ${b})`;
       }
 
       let html = '<thead><tr>';
-      sortedRadiographers.forEach(rad => {
-        html += `<th>${rad}</th>`;
-      });
+      sortedRadiographers.forEach(rad => { html += `<th>${rad}</th>`; });
       html += '</tr></thead><tbody>';
 
-      // Data row
       html += '<tr>';
       sortedRadiographers.forEach(rad => {
         const val = counts[rad];
-        const bg = pastelGradient(val);
+        const bg = gradient(val);
         const isLeast = (val === minVal) ? 'class="least"' : '';
         html += `<td style="background:${bg};" ${isLeast}>${val}</td>`;
       });
       html += '</tr>';
 
-      // Imbalance row
       html += '<tr style="font-weight:bold;">';
       html += `<td colspan="${sortedRadiographers.length}" class="${imbalanceClass(cv)}">Balance score: ${cv}%</td>`;
       html += '</tr></tbody>';
