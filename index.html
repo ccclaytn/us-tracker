@@ -9,146 +9,161 @@
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
       margin: 20px;
-      background: #f5f7fa;
-      color: #333;
+      background: #F8F9FA;
+      color: #495057;
     }
     .dashboard-card {
       background: white;
-      border-radius: 16px;
+      border-radius: 20px;
       padding: 24px;
       margin-bottom: 24px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
     }
-    .settings { background: #f9f9f9; border-radius: 12px; padding: 12px 16px; margin-bottom: 20px; }
-    .settings summary { cursor: pointer; font-weight: bold; }
+    .settings {
+      background: white;
+      border-radius: 16px;
+      padding: 12px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .settings summary { cursor: pointer; font-weight: bold; color: #495057; }
     input[type="text"] {
       width: 100%;
       margin: 8px 0;
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid #D1E8FF;
       font-size: 14px;
+      outline: none;
+      background: #F8F9FA;
     }
     button, select {
       margin: 6px 4px;
       padding: 10px 18px;
       font-size: 14px;
       cursor: pointer;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+      border-radius: 12px;
+      border: 1px solid #D1E8FF;
       background: white;
-      transition: background 0.2s;
+      color: #495057;
+      transition: all 0.2s;
     }
-    button:hover { background: #f0f0f0; }
+    button:hover { background: #D1E8FF; border-color: #D1E8FF; }
     select { background: white; }
     .section { margin: 30px 0; }
-    .note { font-size: 0.85em; color: #666; margin-top: 8px; }
-    .chart-container { position: relative; width: 100%; max-width: 100%; }
+    .note { font-size: 0.85em; color: #6c757d; margin-top: 8px; }
+    .chart-container {
+      position: relative;
+      width: 100%;
+      max-width: 100%;
+      background: white;
+      border-radius: 16px;
+      padding: 8px;
+    }
     canvas { max-width: 100%; height: 400px; display: block; }
 
-    /* Horizontal table styles */
+    /* Horizontal table styles – narrower cells */
     .fair-table-wrapper {
       width: 100%;
       overflow-x: auto;
-      border-radius: 12px;
+      border-radius: 16px;
       background: white;
-      padding: 8px 0;
+      padding: 4px 0;
     }
     .horizontal-table {
       border-collapse: collapse;
       width: 100%;
-      min-width: 100%;
       table-layout: auto;
-      border-radius: 12px;
-      overflow: hidden;
     }
     .horizontal-table th, .horizontal-table td {
-      border: 1px solid #ddd;
-      padding: 10px 8px;
+      border: 1px solid #E9ECEF;
+      padding: 8px 6px;
       text-align: center;
       font-size: 13px;
-      min-width: 70px;
-      border-radius: 0; /* we'll round container instead */
+      min-width: 60px;          /* reduced from 70px */
+      background-color: transparent;
     }
     .horizontal-table th {
-      background: #f0f2f5;
+      background: #F1F3F5;
       font-weight: 600;
       white-space: nowrap;
     }
     .horizontal-table td {
-      background-color: transparent; /* we set inline */
+      border-radius: 0;         /* cells don't need individual rounding; container is rounded */
       transition: background 0.3s;
     }
     .least {
-      outline: 3px solid #333;
+      outline: 3px solid #495057;
       outline-offset: -3px;
       font-weight: bold;
     }
-    .imbalance-green { background-color: #d4edda; color: #155724; }
-    .imbalance-yellow { background-color: #fff3cd; color: #856404; }
-    .imbalance-red { background-color: #f8d7da; color: #721c24; }
+    .imbalance-green { background-color: #D4EDDA; color: #155724; }
+    .imbalance-yellow { background-color: #FFF3CD; color: #856404; }
+    .imbalance-red { background-color: #F8D7DA; color: #721c24; }
     .no-data { color: #888; font-style: italic; }
-    .status { font-size: 0.9em; color: #007700; margin-left: 10px; }
+    .status { font-size: 0.9em; color: #6c757d; margin-left: 10px; }
 
-    /* Rounded corners for chart card */
-    .chart-card {
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    /* Title centered */
+    .main-title {
+      text-align: center;
+      margin: 0 0 8px 0;
+      font-size: 24px;
+      font-weight: 600;
+      color: #495057;
     }
-    .filters-row {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 16px;
+
+    /* Pastel buttons for specific actions */
+    .btn-outline {
       background: white;
-      border-radius: 16px;
-      padding: 16px 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      border: 1px solid #D1E8FF;
     }
-    .filters-row label { font-weight: 600; }
+    .btn-outline:hover { background: #D1E8FF; }
+    .btn-danger-soft {
+      background: #F8D7DA;
+      border-color: #F8D7DA;
+      color: #721c24;
+    }
+    .btn-danger-soft:hover { background: #f1c0c5; }
   </style>
 </head>
 <body>
-  <div class="dashboard-card">
-    <h2>🔬 Ultrasound Duty Fairness Dashboard</h2>
+  <!-- Title centered -->
+  <div class="dashboard-card" style="text-align:center;">
+    <h2 class="main-title">👀 Ultrasound Duty Fairness Dashboard</h2>
   </div>
 
   <!-- Settings -->
   <details class="settings">
     <summary>⚙️ Dashboard Settings</summary>
-    <p class="note">Paste your published Google Sheet CSV URL here, then click “Save & Reload”.<br>
+    <p class="note">Paste your published Google Sheet CSV URL, then click “Save & Reload”.<br>
        Required columns: <code>Date, Radiographer, Duty</code>.</p>
     <input type="text" id="sheetUrlInput" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv">
     <br>
-    <button onclick="saveSheetUrl()">💾 Save & Reload</button>
-    <button onclick="resetToSample()" style="background:#f8d7da;">↩ Reset to Sample Data</button>
+    <button onclick="saveSheetUrl()" class="btn-outline">💾 Save & Reload</button>
+    <button onclick="resetToSample()" class="btn-danger-soft">↩ Reset to Sample Data</button>
   </details>
 
-  <!-- Refresh button and status -->
-  <div style="margin: 20px 0;">
-    <button onclick="refreshData()">🔄 Refresh Data from Sheet</button>
+  <!-- Refresh status -->
+  <div style="margin: 20px 0; text-align:center;">
+    <button onclick="refreshData()" class="btn-outline">🔄 Refresh Data from Sheet</button>
     <span id="lastUpdated" class="status"></span>
   </div>
 
   <!-- Filters -->
-  <div class="filters-row">
-    <label for="monthSelect">📅 Month:</label>
+  <div class="dashboard-card" style="display:flex; flex-wrap:wrap; align-items:center; gap:16px;">
+    <label for="monthSelect" style="font-weight:600;">📅 Month:</label>
     <select id="monthSelect" onchange="updateDashboard()">
       <option value="All">All months</option>
     </select>
-    <label for="dutySelect">🏷️ Duty:</label>
+    <label for="dutySelect" style="font-weight:600;">🏷️ Duty:</label>
     <select id="dutySelect" onchange="updateDashboard()">
       <option value="All">All duties</option>
     </select>
   </div>
 
   <!-- Chart -->
-  <div class="chart-card">
-    <h3>Duties per radiographer (stacked by month)</h3>
+  <div class="dashboard-card">
+    <h3 style="margin-top:0; color:#495057;">Duties per radiographer (stacked by month)</h3>
     <div class="chart-container">
       <canvas id="dutyChart"></canvas>
       <div id="noDataMessage" style="display:none;" class="no-data"></div>
@@ -157,7 +172,7 @@
 
   <!-- Horizontal fairness table -->
   <div class="dashboard-card">
-    <h3>Fairness table – most duties to least (green 🔴 ➔ 🟢 red gradient)</h3>
+    <h3 style="margin-top:0; color:#495057;">Fairness table – most duties to least (green 🔴 ➔ 🟢 red gradient)</h3>
     <div class="fair-table-wrapper">
       <table class="horizontal-table" id="fairTable"></table>
     </div>
@@ -171,8 +186,9 @@
   </div>
 
   <script>
-    const DEFAULT_SHEET_URL = "";
+    const DEFAULT_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQSKK4Y2jaIBMsnviob3Ckh-DAgSqsrEATV8rr4LHezAcjTQ3nCB1G7zsOeHTBhR1ygb7sj8f7-eqr4/pub?gid=0&single=true&output=csv";
 
+    // Sample data
     const SAMPLE_CSV = `Date,Radiographer,Duty
 2026-01-05,Alice,USP.
 2026-01-05,Bob,KUS
@@ -192,6 +208,22 @@
 2026-04-13,Carol,USP.
 2026-04-20,Dave,USP.
 2026-04-27,Bob,KUS`;
+
+    // Pastel palette for months (12 distinct soft colors)
+    const MONTH_COLORS = [
+      '#D1E8FF', // Soft Sky Blue
+      '#D4EDDA', // Mint Green
+      '#FFF3CD', // Pale Straw
+      '#F8D7DA', // Soft Rose
+      '#E2E3E5', // Light Gray
+      '#FDE2E4', // Blush
+      '#FAD2E1', // Pink
+      '#C5D3E8', // Periwinkle
+      '#D6E5FA', // Powder Blue
+      '#E8F4F8', // Ice Blue
+      '#F0F4C3', // Light Lime
+      '#FFE5B4'  // Peach
+    ];
 
     let allRecords = [];
     let allRadiographers = [];
@@ -328,7 +360,6 @@
       if (selectedMonth !== 'All') records = records.filter(r => r.month === selectedMonth);
       if (selectedDuty !== 'All') records = records.filter(r => r.duty === selectedDuty);
 
-      // Sort radiographers by total count descending
       const countsForSort = {};
       allRadiographers.forEach(rad => countsForSort[rad] = 0);
       records.forEach(rec => { countsForSort[rec.radiographer] = (countsForSort[rec.radiographer] || 0) + 1; });
@@ -343,7 +374,7 @@
       updateTable(records, selectedDuty, sortedRadiographers, countsForSort);
     }
 
-    // ---------- Chart ----------
+    // ---------- Chart with rounded bars and pastel colors ----------
     function updateChart(records, selectedDuty, selectedMonth, sortedRadiographers) {
       const canvas = document.getElementById('dutyChart');
       const noDataDiv = document.getElementById('noDataMessage');
@@ -367,15 +398,16 @@
       if (selectedMonth === 'All') {
         const months = [...new Set(records.map(r => r.month))].sort();
         datasets = months.map((month, idx) => {
-          const hue = (idx * 47) % 360;
+          const color = MONTH_COLORS[idx % MONTH_COLORS.length];
           return {
             label: month,
             data: sortedRadiographers.map(rad =>
               records.filter(r => r.radiographer === rad && r.month === month).length
             ),
-            backgroundColor: `hsla(${hue}, 70%, 60%, 0.8)`,
-            borderColor: `hsl(${hue}, 70%, 40%)`,
-            borderWidth: 1
+            backgroundColor: color,
+            borderColor: color,
+            borderWidth: 1,
+            borderRadius: 6
           };
         });
       } else {
@@ -384,9 +416,10 @@
           data: sortedRadiographers.map(rad =>
             records.filter(r => r.radiographer === rad).length
           ),
-          backgroundColor: 'hsla(210, 70%, 60%, 0.8)',
-          borderColor: 'hsl(210, 70%, 40%)',
-          borderWidth: 1
+          backgroundColor: '#D1E8FF',
+          borderColor: '#D1E8FF',
+          borderWidth: 1,
+          borderRadius: 6
         }];
       }
 
@@ -410,23 +443,24 @@
           responsive: true,
           plugins: {
             tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} duties` } },
-            legend: { position: 'bottom' },
+            legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 10 } },
             title: {
               display: true,
               text: (selectedDuty === 'All' ? 'All duties' : selectedDuty) +
                     (selectedMonth === 'All' ? ' – all months' : ' – ' + selectedMonth),
-              font: { size: 16 }
+              font: { size: 16, family: "'Segoe UI'", weight: '600' },
+              color: '#495057'
             }
           },
           scales: {
-            x: { stacked: selectedMonth === 'All', title: { display: true, text: 'Radiographer (most duties →)' } },
-            y: { stacked: selectedMonth === 'All', title: { display: true, text: 'Number of duties' }, beginAtZero: true, ticks: { stepSize: 1 } }
+            x: { stacked: selectedMonth === 'All', title: { display: true, text: 'Radiographer (most duties →)', color: '#495057' } },
+            y: { stacked: selectedMonth === 'All', title: { display: true, text: 'Number of duties', color: '#495057' }, beginAtZero: true, ticks: { stepSize: 1 } }
           }
         }
       });
     }
 
-    // ---------- Horizontal table ----------
+    // ---------- Horizontal table with pastel gradient ----------
     function updateTable(records, selectedDuty, sortedRadiographers, countsForSort) {
       if (sortedRadiographers.length === 0) {
         document.getElementById('fairTable').innerHTML = '<tr><td class="no-data">No staff data.</td></tr>';
@@ -437,7 +471,6 @@
         return;
       }
 
-      // Counts per radiographer (already sorted)
       const counts = {};
       sortedRadiographers.forEach(rad => counts[rad] = 0);
       records.forEach(rec => { counts[rec.radiographer] = (counts[rec.radiographer] || 0) + 1; });
@@ -447,7 +480,6 @@
       const minVal = Math.min(...values, 0);
       const range = maxVal - minVal || 1;
 
-      // CV calculation
       const mean = values.reduce((a,b) => a+b, 0) / values.length;
       let cv = 0;
       if (mean > 0) {
@@ -461,14 +493,19 @@
         return 'imbalance-red';
       }
 
-      function colorFor(val) {
-        if (range === 0) return 'hsl(120, 70%, 50%)';
+      // Gradient from Mint Green (most) to Soft Rose (least)
+      function pastelGradient(val) {
+        if (range === 0) return '#D4EDDA';
         const ratio = (val - minVal) / range;
-        const hue = 120 * ratio; // 0=red, 120=green
-        return `hsl(${hue}, 70%, 50%)`;
+        // Interpolate between #F8D7DA (soft rose) and #D4EDDA (mint green)
+        const r1 = 0xF8, g1 = 0xD7, b1 = 0xDA; // rose
+        const r2 = 0xD4, g2 = 0xED, b2 = 0xDA; // mint
+        const r = Math.round(r1 + ratio * (r2 - r1));
+        const g = Math.round(g1 + ratio * (g2 - g1));
+        const b = Math.round(b1 + ratio * (b2 - b1));
+        return `rgb(${r}, ${g}, ${b})`;
       }
 
-      // Build horizontal table: one header row with radiographer names, one data row with counts, one imbalance row
       let html = '<thead><tr>';
       sortedRadiographers.forEach(rad => {
         html += `<th>${rad}</th>`;
@@ -479,7 +516,7 @@
       html += '<tr>';
       sortedRadiographers.forEach(rad => {
         const val = counts[rad];
-        const bg = colorFor(val);
+        const bg = pastelGradient(val);
         const isLeast = (val === minVal) ? 'class="least"' : '';
         html += `<td style="background:${bg};" ${isLeast}>${val}</td>`;
       });
@@ -488,9 +525,8 @@
       // Imbalance row
       html += '<tr style="font-weight:bold;">';
       html += `<td colspan="${sortedRadiographers.length}" class="${imbalanceClass(cv)}">Balance score: ${cv}%</td>`;
-      html += '</tr>';
+      html += '</tr></tbody>';
 
-      html += '</tbody>';
       document.getElementById('fairTable').innerHTML = html;
     }
 
