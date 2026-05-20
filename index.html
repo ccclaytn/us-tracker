@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Ultrasound Duty Fairness Dashboard</title>
+  <title>Ultrasound Duty Distribution Dashboard</title>
   <!-- Favicon: eyes emoji -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👀</text></svg>">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -95,8 +95,9 @@
       min-width: 60px;
       background-color: transparent;
     }
+    /* Radiographer header cells now white */
     .horizontal-table th {
-      background: #f8bbd0;           /* soft pink header */
+      background: #ffffff;
       font-weight: 600;
       white-space: nowrap;
       color: #495057;
@@ -106,7 +107,7 @@
     }
     /* Suggestion cell: subtle blue border, no thick outline */
     .least {
-      border: 2px solid #64b5f6 !important;   /* override default border */
+      border: 2px solid #64b5f6 !important;
       font-weight: normal;
     }
     /* Imbalance score colours */
@@ -176,12 +177,12 @@
 
   <!-- Horizontal fairness table -->
   <div class="dashboard-card">
-    <h3 style="margin-top:0; color:#495057;">Fairness table – most duties to least (blue → pink gradient)</h3>
+    <h3 style="margin-top:0; color:#495057;">Fairness table – most duties to least (pink → blue gradient)</h3>
     <div class="fair-table-wrapper">
       <table class="horizontal-table" id="fairTable"></table>
     </div>
     <div class="note">
-      🔵➔🩷 Gradient: blue = most assigned, pink = least assigned.<br>
+      🩷➔🔵 Gradient: pink = most assigned, blue = least assigned.<br>
       <strong>Soft blue border</strong> = radiographer with fewest duties (ideal for next roster).<br>
       Balance score: <span class="imbalance-green">0–30% very fair</span>,
       <span class="imbalance-yellow">30–50% moderate</span>,
@@ -212,11 +213,11 @@
 2026-04-20,Dave,USP.
 2026-04-27,Bob,KUS`;
 
-    // 12 distinguishable pastel colours (yellow replaced with warmer #FFE082)
+    // 12 distinguishable pastel colours
     const MONTH_COLORS = [
       '#FFB3BA',  // light pink
       '#FFDFBA',  // peach
-      '#FFE082',  // warm pastel yellow (now visible)
+      '#FFE082',  // warm pastel yellow
       '#BAFFC9',  // soft mint
       '#BAE1FF',  // light blue
       '#D0BAFF',  // lavender
@@ -465,7 +466,7 @@
       });
     }
 
-    // ---------- Horizontal table with blue → pink gradient ----------
+    // ---------- Horizontal table with pink → blue gradient ----------
     function updateTable(records, selectedDuty, sortedRadiographers, countsForSort) {
       if (sortedRadiographers.length === 0) {
         document.getElementById('fairTable').innerHTML = '<tr><td class="no-data">No staff data.</td></tr>';
@@ -498,13 +499,14 @@
         return 'imbalance-red';
       }
 
-      // Smooth gradient from pastel blue (most) to pastel pink (least)
+      // Gradient: max (pink) → min (blue)
       function gradient(val) {
-        if (range === 0) return '#bbdefb';
-        const ratio = (val - minVal) / range;
-        const r = Math.round(187 + ratio * (248 - 187));
-        const g = Math.round(222 + ratio * (187 - 222));
-        const b = Math.round(251 + ratio * (208 - 251));
+        if (range === 0) return '#f8bbd0';               // all equal -> pink
+        const ratio = (val - minVal) / range;             // 0 (min) → 1 (max)
+        // Interpolate from pink (#f8bbd0) at ratio=1 to blue (#bbdefb) at ratio=0
+        const r = Math.round(187 + ratio * (248 - 187));  // 187 -> 248
+        const g = Math.round(222 + ratio * (187 - 222));  // 222 -> 187
+        const b = Math.round(251 + ratio * (208 - 251));  // 251 -> 208
         return `rgb(${r}, ${g}, ${b})`;
       }
 
