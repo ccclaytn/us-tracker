@@ -5,69 +5,174 @@
   <title>Ultrasound Duty Fairness Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    .settings { background: #f9f9f9; padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 20px;
+      background: #f5f7fa;
+      color: #333;
+    }
+    .dashboard-card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .settings { background: #f9f9f9; border-radius: 12px; padding: 12px 16px; margin-bottom: 20px; }
     .settings summary { cursor: pointer; font-weight: bold; }
-    input[type="text"] { width: 100%; margin: 5px 0; padding: 6px; }
-    button, select { margin: 8px 5px; padding: 8px 16px; font-size: 15px; cursor: pointer; }
+    input[type="text"] {
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    button, select {
+      margin: 6px 4px;
+      padding: 10px 18px;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      background: white;
+      transition: background 0.2s;
+    }
+    button:hover { background: #f0f0f0; }
+    select { background: white; }
     .section { margin: 30px 0; }
-    table { border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #ccc; padding: 8px 12px; text-align: center; font-size: 14px; }
-    th { background: #f0f0f0; }
-    .suggested { background-color: #d4edda; font-weight: bold; }
-    .note { font-size: 0.85em; color: #555; }
-    canvas { max-width: 100%; height: 400px; }
+    .note { font-size: 0.85em; color: #666; margin-top: 8px; }
+    .chart-container { position: relative; width: 100%; max-width: 100%; }
+    canvas { max-width: 100%; height: 400px; display: block; }
+
+    /* Horizontal table styles */
+    .fair-table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 12px;
+      background: white;
+      padding: 8px 0;
+    }
+    .horizontal-table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 100%;
+      table-layout: auto;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .horizontal-table th, .horizontal-table td {
+      border: 1px solid #ddd;
+      padding: 10px 8px;
+      text-align: center;
+      font-size: 13px;
+      min-width: 70px;
+      border-radius: 0; /* we'll round container instead */
+    }
+    .horizontal-table th {
+      background: #f0f2f5;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .horizontal-table td {
+      background-color: transparent; /* we set inline */
+      transition: background 0.3s;
+    }
+    .least {
+      outline: 3px solid #333;
+      outline-offset: -3px;
+      font-weight: bold;
+    }
     .imbalance-green { background-color: #d4edda; color: #155724; }
     .imbalance-yellow { background-color: #fff3cd; color: #856404; }
     .imbalance-red { background-color: #f8d7da; color: #721c24; }
     .no-data { color: #888; font-style: italic; }
     .status { font-size: 0.9em; color: #007700; margin-left: 10px; }
+
+    /* Rounded corners for chart card */
+    .chart-card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .filters-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 16px;
+      background: white;
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .filters-row label { font-weight: 600; }
   </style>
 </head>
 <body>
-  <h2>Ultrasound Duty Fairness Dashboard</h2>
+  <div class="dashboard-card">
+    <h2>🔬 Ultrasound Duty Fairness Dashboard</h2>
+  </div>
 
-  <details class="settings" id="settingsPanel">
+  <!-- Settings -->
+  <details class="settings">
     <summary>⚙️ Dashboard Settings</summary>
     <p class="note">Paste your published Google Sheet CSV URL here, then click “Save & Reload”.<br>
-       The sheet must have columns: <code>Date, Radiographer, Duty</code>.</p>
+       Required columns: <code>Date, Radiographer, Duty</code>.</p>
     <input type="text" id="sheetUrlInput" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv">
     <br>
     <button onclick="saveSheetUrl()">💾 Save & Reload</button>
     <button onclick="resetToSample()" style="background:#f8d7da;">↩ Reset to Sample Data</button>
   </details>
 
-  <div class="section">
+  <!-- Refresh button and status -->
+  <div style="margin: 20px 0;">
     <button onclick="refreshData()">🔄 Refresh Data from Sheet</button>
     <span id="lastUpdated" class="status"></span>
   </div>
 
-  <div class="section">
-    <label for="monthSelect"><strong>Month:</strong></label>
+  <!-- Filters -->
+  <div class="filters-row">
+    <label for="monthSelect">📅 Month:</label>
     <select id="monthSelect" onchange="updateDashboard()">
       <option value="All">All months</option>
     </select>
-    <label for="dutySelect" style="margin-left:20px;"><strong>Duty:</strong></label>
+    <label for="dutySelect">🏷️ Duty:</label>
     <select id="dutySelect" onchange="updateDashboard()">
       <option value="All">All duties</option>
     </select>
   </div>
 
-  <div id="chartSection" class="section">
+  <!-- Chart -->
+  <div class="chart-card">
     <h3>Duties per radiographer (stacked by month)</h3>
-    <canvas id="dutyChart"></canvas>
-    <div id="noDataMessage" style="display:none;" class="no-data"></div>
+    <div class="chart-container">
+      <canvas id="dutyChart"></canvas>
+      <div id="noDataMessage" style="display:none;" class="no-data"></div>
+    </div>
   </div>
 
-  <div id="tableSection" class="section">
-    <h3>Duty counts – green = suggested for next roster</h3>
-    <div id="fairTable"></div>
+  <!-- Horizontal fairness table -->
+  <div class="dashboard-card">
+    <h3>Fairness table – most duties to least (green 🔴 ➔ 🟢 red gradient)</h3>
+    <div class="fair-table-wrapper">
+      <table class="horizontal-table" id="fairTable"></table>
+    </div>
+    <div class="note">
+      🔴➔🟢 Gradient: red = least assigned, green = most assigned.<br>
+      <strong>Thick outline</strong> = radiographer with fewest duties (ideal for next roster).<br>
+      Balance score: <span class="imbalance-green">0–30% very fair</span>,
+      <span class="imbalance-yellow">30–50% moderate</span>,
+      <span class="imbalance-red">over 50% needs attention</span>.
+    </div>
   </div>
 
   <script>
     const DEFAULT_SHEET_URL = "";
 
-    // Sample data includes ultrasound and "Non-Ultrasound"
     const SAMPLE_CSV = `Date,Radiographer,Duty
 2026-01-05,Alice,USP.
 2026-01-05,Bob,KUS
@@ -193,7 +298,6 @@
 
     // ---------- Filters ----------
     function populateFilters() {
-      // Months
       const months = [...new Set(allRecords.map(r => r.month))].sort();
       const monthSelect = document.getElementById('monthSelect');
       const curMonth = monthSelect.value;
@@ -204,7 +308,6 @@
       });
       monthSelect.value = months.includes(curMonth) ? curMonth : 'All';
 
-      // Duties
       const duties = [...new Set(allRecords.map(r => r.duty))].sort();
       const dutySelect = document.getElementById('dutySelect');
       const curDuty = dutySelect.value;
@@ -225,12 +328,23 @@
       if (selectedMonth !== 'All') records = records.filter(r => r.month === selectedMonth);
       if (selectedDuty !== 'All') records = records.filter(r => r.duty === selectedDuty);
 
-      updateChart(records, selectedDuty, selectedMonth);
-      updateTable(records, selectedDuty);
+      // Sort radiographers by total count descending
+      const countsForSort = {};
+      allRadiographers.forEach(rad => countsForSort[rad] = 0);
+      records.forEach(rec => { countsForSort[rec.radiographer] = (countsForSort[rec.radiographer] || 0) + 1; });
+
+      const sortedRadiographers = [...allRadiographers].sort((a, b) => {
+        const countDiff = (countsForSort[b] || 0) - (countsForSort[a] || 0);
+        if (countDiff !== 0) return countDiff;
+        return a.localeCompare(b);
+      });
+
+      updateChart(records, selectedDuty, selectedMonth, sortedRadiographers);
+      updateTable(records, selectedDuty, sortedRadiographers, countsForSort);
     }
 
     // ---------- Chart ----------
-    function updateChart(records, selectedDuty, selectedMonth) {
+    function updateChart(records, selectedDuty, selectedMonth, sortedRadiographers) {
       const canvas = document.getElementById('dutyChart');
       const noDataDiv = document.getElementById('noDataMessage');
 
@@ -241,7 +355,7 @@
         return;
       }
 
-      if (allRadiographers.length === 0) {
+      if (sortedRadiographers.length === 0) {
         noDataDiv.style.display = 'block';
         noDataDiv.textContent = 'No staff data.';
         canvas.style.display = 'none';
@@ -249,34 +363,33 @@
         return;
       }
 
-      const radiographers = allRadiographers;
       let datasets;
-
       if (selectedMonth === 'All') {
-        // Stacked by month
         const months = [...new Set(records.map(r => r.month))].sort();
         datasets = months.map((month, idx) => {
           const hue = (idx * 47) % 360;
           return {
             label: month,
-            data: radiographers.map(rad => records.filter(r => r.radiographer === rad && r.month === month).length),
+            data: sortedRadiographers.map(rad =>
+              records.filter(r => r.radiographer === rad && r.month === month).length
+            ),
             backgroundColor: `hsla(${hue}, 70%, 60%, 0.8)`,
             borderColor: `hsl(${hue}, 70%, 40%)`,
             borderWidth: 1
           };
         });
       } else {
-        // Single month → plain bar
         datasets = [{
           label: selectedMonth,
-          data: radiographers.map(rad => records.filter(r => r.radiographer === rad).length),
+          data: sortedRadiographers.map(rad =>
+            records.filter(r => r.radiographer === rad).length
+          ),
           backgroundColor: 'hsla(210, 70%, 60%, 0.8)',
           borderColor: 'hsl(210, 70%, 40%)',
           borderWidth: 1
         }];
       }
 
-      // Even with zero records, show a flat chart
       if (records.length === 0) {
         noDataDiv.style.display = 'block';
         noDataDiv.textContent = 'No data for the selected filters.';
@@ -292,7 +405,7 @@
 
       chartInstance = new Chart(ctx, {
         type: 'bar',
-        data: { labels: radiographers, datasets },
+        data: { labels: sortedRadiographers, datasets },
         options: {
           responsive: true,
           plugins: {
@@ -306,35 +419,39 @@
             }
           },
           scales: {
-            x: { stacked: selectedMonth === 'All', title: { display: true, text: 'Radiographer' } },
+            x: { stacked: selectedMonth === 'All', title: { display: true, text: 'Radiographer (most duties →)' } },
             y: { stacked: selectedMonth === 'All', title: { display: true, text: 'Number of duties' }, beginAtZero: true, ticks: { stepSize: 1 } }
           }
         }
       });
     }
 
-    // ---------- Table with imbalance ----------
-    function updateTable(records, selectedDuty) {
-      if (allRadiographers.length === 0) {
-        document.getElementById('fairTable').innerHTML = '<p class="no-data">No staff data.</p>';
+    // ---------- Horizontal table ----------
+    function updateTable(records, selectedDuty, sortedRadiographers, countsForSort) {
+      if (sortedRadiographers.length === 0) {
+        document.getElementById('fairTable').innerHTML = '<tr><td class="no-data">No staff data.</td></tr>';
         return;
       }
       if (selectedDuty === 'All') {
-        document.getElementById('fairTable').innerHTML = '<p class="note">⚠️ Select a specific duty to see fairness table.</p>';
+        document.getElementById('fairTable').innerHTML = '<tr><td class="note">⚠️ Select a specific duty to see fairness table.</td></tr>';
         return;
       }
 
-      const radiographers = allRadiographers;
+      // Counts per radiographer (already sorted)
       const counts = {};
-      radiographers.forEach(rad => counts[rad] = 0);
+      sortedRadiographers.forEach(rad => counts[rad] = 0);
       records.forEach(rec => { counts[rec.radiographer] = (counts[rec.radiographer] || 0) + 1; });
 
-      let minCount = Math.min(...Object.values(counts));
-      const vals = Object.values(counts);
-      const mean = vals.reduce((a,b) => a+b, 0) / vals.length;
+      const values = sortedRadiographers.map(rad => counts[rad]);
+      const maxVal = Math.max(...values, 0);
+      const minVal = Math.min(...values, 0);
+      const range = maxVal - minVal || 1;
+
+      // CV calculation
+      const mean = values.reduce((a,b) => a+b, 0) / values.length;
       let cv = 0;
       if (mean > 0) {
-        const variance = vals.reduce((sum, v) => sum + (v - mean)**2, 0) / vals.length;
+        const variance = values.reduce((sum, v) => sum + (v - mean)**2, 0) / values.length;
         cv = Math.round((Math.sqrt(variance) / mean) * 100);
       }
 
@@ -344,18 +461,36 @@
         return 'imbalance-red';
       }
 
-      let html = '<table><thead><tr><th>Radiographer</th><th>' + selectedDuty + '</th></tr></thead><tbody>';
-      radiographers.forEach(rad => {
-        const val = counts[rad];
-        const cellClass = (val === minCount) ? 'class="suggested"' : '';
-        html += `<tr><td><strong>${rad}</strong></td><td ${cellClass}>${val}</td></tr>`;
+      function colorFor(val) {
+        if (range === 0) return 'hsl(120, 70%, 50%)';
+        const ratio = (val - minVal) / range;
+        const hue = 120 * ratio; // 0=red, 120=green
+        return `hsl(${hue}, 70%, 50%)`;
+      }
+
+      // Build horizontal table: one header row with radiographer names, one data row with counts, one imbalance row
+      let html = '<thead><tr>';
+      sortedRadiographers.forEach(rad => {
+        html += `<th>${rad}</th>`;
       });
-      html += `<tr style="font-weight:bold;"><td>Balance score</td><td class="${imbalanceClass(cv)}">${cv}%</td></tr>`;
-      html += '</tbody></table>';
-      html += `<p class="note">🟢 Green cells = fewest assignments → suggested for next roster.<br>
-                Balance score: <span class="imbalance-green">0–30% very fair</span>,
-                <span class="imbalance-yellow">30–50% moderate</span>,
-                <span class="imbalance-red">over 50% needs attention</span>.</p>`;
+      html += '</tr></thead><tbody>';
+
+      // Data row
+      html += '<tr>';
+      sortedRadiographers.forEach(rad => {
+        const val = counts[rad];
+        const bg = colorFor(val);
+        const isLeast = (val === minVal) ? 'class="least"' : '';
+        html += `<td style="background:${bg};" ${isLeast}>${val}</td>`;
+      });
+      html += '</tr>';
+
+      // Imbalance row
+      html += '<tr style="font-weight:bold;">';
+      html += `<td colspan="${sortedRadiographers.length}" class="${imbalanceClass(cv)}">Balance score: ${cv}%</td>`;
+      html += '</tr>';
+
+      html += '</tbody>';
       document.getElementById('fairTable').innerHTML = html;
     }
 
